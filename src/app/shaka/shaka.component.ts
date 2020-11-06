@@ -1,6 +1,7 @@
 import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import shaka from 'shaka-player/dist/shaka-player.ui.js';
 import 'shaka-player/dist/controls.css';
+import {PlayButton} from './custom/playButton';
 
 @Component({
   selector: 'app-shaka',
@@ -29,9 +30,26 @@ export class ShakaComponent implements OnInit, AfterViewInit {
   private initPlayer(): void {
     const player = new shaka.Player(this.videoElement);
 
-    const uiConfig: any = {};
+    // @ts-ignore
+    shaka.ui.Controls.registerElement(
+      'customPlay',
+      new PlayButton.Factory()
+    );
 
-    uiConfig.controlPanelElements = ['play_pause', 'mute', 'volume', 'time_duration', 'fullscreen', 'overflow_menu'];
+    const uiConfig: any = {
+      addSeekBar: true,
+      seekBarColors: {
+        base: 'rgba(127, 0, 0, 0.3)',
+        buffered: 'rgba(255, 0, 255, 0.54)',
+        played: 'rgba(255, 141, 141)'
+      },
+      volumeBarColors: {
+        base: 'rgba(0, 255, 0)',
+        level: 'rgba(255, 255, 141)'
+      },
+      controlPanelElements: ['customPlay', 'mute', 'volume', 'time_duration', 'fullscreen', 'play_pause']
+    };
+
     const ui: any = new shaka.ui.Overlay(player, this.videoContainerElement, this.videoElement);
 
     ui.configure(uiConfig);
